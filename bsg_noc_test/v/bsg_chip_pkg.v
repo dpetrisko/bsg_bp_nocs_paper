@@ -12,6 +12,7 @@ package bsg_chip_pkg;
   // One-hot configuration
   localparam aux_type_gp  = BSG_AUX_TYPE;
   localparam aux_width_gp = BSG_AUX_WIDTH;
+  localparam aux_els_gp   = BSG_AUX_ELS;
 
   // Theoeretically sweepable, but we assume 1 flit header + cache line maximum message size and derive
   localparam data_width_gp = 512;

@@ -56,11 +56,41 @@ module bsg_chip
     end
   else if (aux_type_gp == 2)
     begin : shift
+      for (genvar i = 0; i < dirs_lp; i++)
+        begin : dir
+          logic [aux_width_gp-1:0] shifted_lo;
+          bsg_dff_chain
+           #(.width_p(aux_width_gp), .num_stages_p(aux_els_gp))
+           shift
+            (.clk_i(clk_i)
+             ,.data_i(links_lo[i][0+:aux_width_gp])
+             ,.data_o(shifted_lo)
+             );
 
+          assign links_li[i] = aux_i[i] ? link_width_lp'(shifted_lo) : links_i[i];
+        end
     end
   else if (aux_type_gp == 3)
     begin : sram
+      // Effectively random toggle
+      wire v_li = my_cord_i[0];
+      wire w_li = my_cord_i[1];
+      wire [`BSG_SAFE_CLOG2(aux_els_gp)-1:0] addr_li = links_i;
+      bsg_mem_1rw_sync_mask_write_byte
+       #(.data_width_p(aux_width_gp), .els_p(aux_els_gp))
+       mem
+        (.clk_i(clk_i)
+         ,.reset_i(reset_i)
 
+         ,.v_i(v_li)
+         ,.w_i(w_li)
+         ,.addr_i(addr_li)
+         ,.write_mask_i('1)
+
+         // I/O
+         ,.data_i(aux_i)
+         ,.data_o(aux_o)
+         );
     end
   else
     begin : error

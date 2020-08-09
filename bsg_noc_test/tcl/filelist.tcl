@@ -21,9 +21,12 @@ set SVERILOG_SOURCE_FILES [join "
   $basejump_stl_dir/bsg_dataflow/bsg_two_fifo.v
   $basejump_stl_dir/bsg_mem/bsg_mem_1r1w.v
   $basejump_stl_dir/bsg_mem/bsg_mem_1r1w_synth.v
+  $basejump_stl_dir/bsg_mem/bsg_mem_1rw_sync_mask_write_byte.v
   $basejump_stl_dir/bsg_misc/bsg_array_concentrate_static.v
   $basejump_stl_dir/bsg_misc/bsg_concentrate_static.v
   $basejump_stl_dir/bsg_misc/bsg_counter_set_down.v
+  $basejump_stl_dir/bsg_misc/bsg_dff.v
+  $basejump_stl_dir/bsg_misc/bsg_dff_chain.v
   $basejump_stl_dir/bsg_misc/bsg_dff_reset.v
   $basejump_stl_dir/bsg_misc/bsg_mux_one_hot.v
   $basejump_stl_dir/bsg_misc/bsg_round_robin_arb.v

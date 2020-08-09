@@ -1,8 +1,9 @@
 
 DIMS        := 1 2
 FLIT_WIDTHS := 16 32 64 128 256 512
-AUX_TYPES   := 1
+AUX_TYPES   := 1 2 3
 AUX_WIDTHS  := 32
+AUX_ELS     := 8
 
 sweep@%:
 	# Extract parameter from makefile target
@@ -10,8 +11,9 @@ sweep@%:
 	$(eval FLIT_WIDTH := $(word 2,$(subst @,  ,$*)))
 	$(eval AUX_TYPE   := $(word 3,$(subst @,  ,$*)))
 	$(eval AUX_WIDTH  := $(word 4,$(subst @,  ,$*)))
+	$(eval AUX_ELS    := $(word 5,$(subst @,  ,$*)))
 	# Create a unit tag for the configuration
-	$(eval BSG_14_DIR := bsg_14.$(DIM).$(FLIT_WIDTH).$(AUX_TYPE).$(AUX_WIDTH))
+	$(eval BSG_14_DIR := bsg_14.$(DIM).$(FLIT_WIDTH).$(AUX_TYPE).$(AUX_WIDTH).$(AUX_ELS))
 
 	# Create bsg_14 directory if it doesn't exist
 	if [ -d $(BSG_14_DIR) ]; then echo "$(BSG_14_DIR) exists"; else cp -r bsg_14/ $(BSG_14_DIR); fi
@@ -24,17 +26,20 @@ sweep@%:
 	sed -i "s/BSG_FLIT_WIDTH/$(FLIT_WIDTH)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_AUX_TYPE/$(AUX_TYPE)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_AUX_WIDTH/$(AUX_WIDTH)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
+	sed -i "s/BSG_AUX_ELS/$(AUX_ELS)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 
 	# Do synth
-	cd $(BSG_14_DIR); $(MAKE) synth > do_synth.log
+	cd $(BSG_14_DIR); $(MAKE) synth #> do_synth.log
 
 targets = \
-	sweep@1@16@1@32   sweep@2@16@1@32 \
-	sweep@1@32@1@32   sweep@2@32@1@32 \
-	sweep@1@64@1@32   sweep@2@64@1@32 \
-	sweep@1@128@1@32  sweep@2@128@1@32 \
-	sweep@1@256@1@32  sweep@2@256@1@32 \
-	sweep@1@512@1@32  sweep@2@512@1@32 \
+	sweep@1@16@1@0@0     sweep@2@16@1@0@0 \
+	sweep@1@512@1@0@0    sweep@2@512@1@0@0 \
+	\
+	sweep@2@128@1@128@16  sweep@2@128@1@128@32 \
+	\
+	sweep@2@128@2@128@512  sweep@2@128@1@128@512 \
 
 sweep: $(targets)
 
+clean_sweep:
+	rm -rf bsg_14.*
