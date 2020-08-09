@@ -1,19 +1,24 @@
 
+NETWORKS    := 1
 DIMS        := 1 2
 FLIT_WIDTHS := 16 32 64 128 256 512
+NUM_AUX     := 1
 AUX_TYPES   := 1 2 3
 AUX_WIDTHS  := 32
 AUX_ELS     := 8
 
 sweep@%:
 	# Extract parameter from makefile target
-	$(eval DIM        := $(word 1,$(subst @,  ,$*)))
-	$(eval FLIT_WIDTH := $(word 2,$(subst @,  ,$*)))
-	$(eval AUX_TYPE   := $(word 3,$(subst @,  ,$*)))
-	$(eval AUX_WIDTH  := $(word 4,$(subst @,  ,$*)))
-	$(eval AUX_ELS    := $(word 5,$(subst @,  ,$*)))
+	$(eval NETWORK    := $(word 1,$(subst @,  ,$*)))
+	$(eval DIM        := $(word 2,$(subst @,  ,$*)))
+	$(eval FLIT_WIDTH := $(word 3,$(subst @,  ,$*)))
+	$(eval NUM_AUX    := $(word 4,$(subst @,  ,$*)))
+	$(eval AUX_TYPE   := $(word 5,$(subst @,  ,$*)))
+	$(eval AUX_WIDTH  := $(word 6,$(subst @,  ,$*)))
+	$(eval AUX_ELS    := $(word 7,$(subst @,  ,$*)))
 	# Create a unit tag for the configuration
-	$(eval BSG_14_DIR := bsg_14.$(DIM).$(FLIT_WIDTH).$(AUX_TYPE).$(AUX_WIDTH).$(AUX_ELS))
+	$(eval TAG := $(NETWORK).$(DIM).$(FLIT_WIDTH).$(NUM_AUX).$(AUX_TYPE).$(AUX_WIDTH).$(AUX_ELS))
+	$(eval BSG_14_DIR := bsg_14.$(TAG))
 
 	# Create bsg_14 directory if it doesn't exist
 	if [ -d $(BSG_14_DIR) ]; then echo "$(BSG_14_DIR) exists"; else cp -r bsg_14/ $(BSG_14_DIR); fi
@@ -22,22 +27,32 @@ sweep@%:
 
 	# Generate sweep-specific configuration package
 	cp v/bsg_chip_pkg.v $(BSG_14_DIR)/bsg_chip_pkg.v
+	sed -i "s/BSG_NETWORKS/$(NETWORK)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_DIMS/$(DIM)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_FLIT_WIDTH/$(FLIT_WIDTH)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
+	sed -i "s/BSG_NUM_AUX/$(NUM_AUX)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_AUX_TYPE/$(AUX_TYPE)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_AUX_WIDTH/$(AUX_WIDTH)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_AUX_ELS/$(AUX_ELS)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 
 	# Do synth
-	cd $(BSG_14_DIR); $(MAKE) synth #> do_synth.log
+	cd $(BSG_14_DIR); $(MAKE) synth > do_synth.$(TAG).log
 
 targets = \
-	sweep@1@16@1@0@0     sweep@2@16@1@0@0 \
-	sweep@1@512@1@0@0    sweep@2@512@1@0@0 \
+	sweep@1@1@64@1@1@32@16 sweep@1@2@64@1@1@32@16 \
+	sweep@2@1@64@1@1@32@16 sweep@2@2@64@1@1@32@16 \
 	\
-	sweep@2@128@1@128@16  sweep@2@128@1@128@32 \
+	sweep@1@1@64@1@2@32@16 sweep@1@2@64@1@2@32@16 \
+	sweep@2@1@64@1@2@32@16 sweep@2@2@64@1@2@32@16 \
 	\
-	sweep@2@128@2@128@512  sweep@2@128@1@128@512 \
+	sweep@1@1@64@2@2@32@16 sweep@1@2@64@2@2@32@16 \
+	sweep@2@1@64@2@2@32@16 sweep@2@2@64@2@2@32@16 \
+	\
+	sweep@1@1@64@2@2@32@16 sweep@1@2@64@2@2@32@16 \
+	sweep@2@1@64@2@2@32@16 sweep@2@2@64@2@2@32@16 \
+	\
+	sweep@1@1@64@2@3@64@512 sweep@1@2@64@2@3@64@512 \
+	sweep@2@1@64@2@3@64@512 sweep@2@2@64@2@3@64@512
 
 sweep: $(targets)
 

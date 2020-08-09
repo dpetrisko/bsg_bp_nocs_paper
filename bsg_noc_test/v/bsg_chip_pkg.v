@@ -1,6 +1,9 @@
 
 package bsg_chip_pkg;
 
+  // Number of networks
+  localparam networks_gp = BSG_NETWORKS;
+
   //// Dimensions of the router
   // Parameter: 1, 2
   localparam dims_gp = BSG_DIMS;
@@ -11,6 +14,7 @@ package bsg_chip_pkg;
   //// co-located logic
   // One-hot configuration
   localparam aux_type_gp  = BSG_AUX_TYPE;
+  localparam num_aux_gp   = BSG_NUM_AUX;
   localparam aux_width_gp = BSG_AUX_WIDTH;
   localparam aux_els_gp   = BSG_AUX_ELS;
 
