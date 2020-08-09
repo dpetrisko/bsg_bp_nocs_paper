@@ -35,8 +35,7 @@ bsg_packaging_commit :=master
 
 all_repos = $(subst _url,.repo,$(filter %_url,$(.VARIABLES)))
 
-all: $(all_repos)
-	-sed -i "s/bsg_ac_black_parrot_quad_core_rc3/bsg_noc_test/g" $(THIS_DIR)/bsg_14/Makefile.include
+setup: $(all_repos)
 
 %.repo:
 	-git clone $($*_url) $($*_dir)
@@ -49,4 +48,4 @@ DISABLE_SAFETY_PROMPT ?= false
 are_you_sure:
 	@$(DISABLE_SAFETY_PROMPT) || (echo -n "Are you sure [Y/n]? " && read ans && ([ "$$ans" == "Y" ] || [ "$$ans" == "y" ]))
 
-
+include Makefile.sweep

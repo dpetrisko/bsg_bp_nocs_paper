@@ -30,6 +30,9 @@ module bsg_chip
    , output logic [aux_width_gp-1:0]               aux_o
    );
 
+  `declare_bsg_ready_and_link_sif_s(flit_width_gp, bsg_ready_and_link_sif_s);
+  bsg_ready_and_link_sif_s [dirs_lp-1:0] links_li, links_lo;
+
   bsg_wormhole_router
    #(.flit_width_p(flit_width_gp)
      ,.dims_p(dims_gp)
@@ -42,9 +45,27 @@ module bsg_chip
      ,.reset_i(reset_i)
 
      ,.my_cord_i(my_cord_i)
-     ,.link_i(links_i)
-     ,.link_o(links_o)
+     ,.link_i(links_li)
+     ,.link_o(links_lo)
      );
+
+  if (aux_type_gp == 1)
+    begin : none
+      assign links_li = links_i;
+      assign links_o = links_lo;
+    end
+  else if (aux_type_gp == 2)
+    begin : shift
+
+    end
+  else if (aux_type_gp == 3)
+    begin : sram
+
+    end
+  else
+    begin : error
+      $fatal(1, "One of aux_none, aux_shift or aux_sram must be set");
+    end
 
 endmodule
 

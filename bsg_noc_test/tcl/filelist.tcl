@@ -3,6 +3,7 @@
 # and macro definitions may be needed by the subsequent files
 #------------------------------------------------------------
 
+set bsg_chip_dir           $::env(BSG_CHIP_DIR)
 set basejump_stl_dir       $::env(BASEJUMP_STL_DIR)
 set bsg_designs_dir        $::env(BSG_DESIGNS_DIR)
 set bsg_designs_target_dir $::env(BSG_DESIGNS_TARGET_DIR)
@@ -33,7 +34,7 @@ set SVERILOG_SOURCE_FILES [join "
   $basejump_stl_dir/bsg_noc/bsg_wormhole_router_input_control.v
   $basejump_stl_dir/bsg_noc/bsg_wormhole_router_output_control.v
 
-  $bsg_designs_target_dir/v/bsg_chip_pkg.v
+  $bsg_chip_dir/bsg_chip_pkg.v
   $bsg_designs_target_dir/v/bsg_chip.v
 "]
 
