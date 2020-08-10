@@ -56,5 +56,8 @@ targets = \
 
 sweep: $(targets)
 
+stats:
+	./stats.py | tee stats.csv
+
 clean_sweep:
 	rm -rf bsg_14.*

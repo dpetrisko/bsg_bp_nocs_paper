@@ -5,3 +5,4 @@ bsg_cadenv/
 bsg_packaging/
 root/
 sources/
+stats.csv
