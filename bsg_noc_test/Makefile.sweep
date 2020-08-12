@@ -1,12 +1,10 @@
 
-NETWORKS    := 1
-DIMS        := 1 2
-FLIT_WIDTHS := 16 32 64 128 256 512
-NUM_AUX     := 1
-AUX_TYPES   := 1 2 3
-AUX_WIDTHS  := 32
-AUX_ELS     := 8
-
+# Runs an individual target
+# This subsitutes the parameters given in sweep@param1@param2@param3... format
+# These parameters are substituted in bsg_chip_pkg, which is used to parameterize bsg_chip.
+# 
+# Each experiment is run in a separate bsg_14 directory with a tag based on the parameterization
+# Synthesis, dp and pnr will be done for the experiment
 sweep@%:
 	# Extract parameter from makefile target
 	$(eval NETWORK    := $(word 1,$(subst @,  ,$*)))
@@ -39,14 +37,24 @@ sweep@%:
 	# Do synth
 	@echo "Starting synthesis runs"
 	cd $(BSG_14_DIR); $(MAKE) synth > do_synth.$(TAG).log
+	@echo "Starting dp runs"
 	cd $(BSG_14_DIR); $(MAKE) dp > do_dp.$(TAG).log
+	@echo "Starting pnr runs"
 	cd $(BSG_14_DIR); $(MAKE) pnr > do_pnr.$(TAG).log
 
+# Generates a stats.csv file based on the current_build in each bsg_14 subdirectory
 stats:
 	./stats.py | tee stats.csv
 
+# A list of targets to run
 # networks @ dims @ flit_width @ num_aux @ aux_type @ aux_width @ aux_els
-ROUTER_TARGETS = \
+# If a sweep is performed without a target list, we error out
+DEFAULT_TARGETS := none
+TARGETS ?= DEFAULT_TARGETS
+$(DEFAULT_TARGETS):
+	@echo "ERROR: Must select sweep TARGETS= from: ROUTER_TARGETS"
+
+ROUTER_TARGETS := \
 	sweep@1@1@32@0@0@0@0 sweep@2@1@32@0@0@0@0 \
 	sweep@1@2@32@0@0@0@0 sweep@2@2@32@0@0@0@0 \
 	\
@@ -56,15 +64,16 @@ ROUTER_TARGETS = \
 	sweep@1@1@96@0@0@0@0 sweep@2@1@96@0@0@0@0 \
 	sweep@1@2@96@0@0@0@0 sweep@2@2@96@0@0@0@0 \
 
-DEFAULT_TARGETS := none
-TARGETS ?= DEFAULT_TARGETS
-$(DEFAULT_TARGETS):
-	@echo "ERROR: Must select sweep TARGETS= from: ROUTER_TARGETS"
-
+# make sweep will run a set of experiments based on the list in TARGETS. Because
+# each pnr run takes ~10 cores, it's not recommended to run with -j > 3 on kk machines
+# Defaults to erroring out for sweep called without targets
 sweep: $($(TARGETS))
 clean_sweep:
 	rm -rf bsg_14.*/build.2020*
 
+# save_results will save all subdirectories' current_build folder to the tag name
+# example: make save_results SAVE_AS=single_track : current_build -> build.single_track
+# if save_results is called without a SAVE_AS, we error out
 SAVE_AS ?=
 SAVE_SUBDIRS := $(addprefix save., $(wildcard bsg_14.*/))
 save_results: $(SAVE_SUBDIRS)
@@ -72,6 +81,9 @@ save.%:
 	@if [ -z "$(SAVE_AS)" ]; then echo "Error: set SAVE_AS"; exit 1; fi
 	cd $*; make rename_build.$(SAVE_AS)
 
+# load_results will restore all subdirectories' current_build folder from the tag name
+# example: make load_results LOAD_AS=single_track : current_build <- build.single_track
+# if load_results is called without a LOAD_AS, we error out
 LOAD_AS ?=
 LOAD_SUBDIRS := $(addprefix load., $(wildcard bsg_14.*/))
 load_results: $(LOAD_SUBDIRS)
