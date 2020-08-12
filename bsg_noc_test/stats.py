@@ -10,7 +10,7 @@ pnr_design_report = "chip_finish.report_design"
 pnr_util_report = "chip_finish.report_utilization"
 
 if __name__ == '__main__':
-    print('networks,dims,flit_width,num_aux,aux_type,aux_width,aux_els,synth_area,pnr_area,wire_length,util')
+    print('networks,dims,flit_width,num_aux,aux_type,aux_width,aux_els,synth_area,pnr_area,wire_length,util,drcs')
     for d in glob.glob('bsg_14.*'):
         fields = d.replace('bsg_14.', '').replace('.',',')
 
@@ -30,9 +30,11 @@ if __name__ == '__main__':
 
                 pnr_area = filter(lambda l: 'Chip Area' in l, lines)[0].split(' ')[-1]
                 pnr_wires = filter(lambda l: 'Total wire' in l, lines)[0].split(' ')[-2]
+                pnr_drcs = filter(lambda l: 'DRCs' in l, lines)[0].split(' ')[-1]
         except:
             pnr_area = 0
             pnr_wires = 0
+            pnr_drcs = 0
 
         report = d + '/' + pnr_report_path + '/' + pnr_util_report
         try:
@@ -45,4 +47,4 @@ if __name__ == '__main__':
 
 
 
-        print("{},{},{},{},{}".format(fields, synth_area, pnr_area, pnr_wires, pnr_util))
+        print("{},{},{},{},{},{}".format(fields, synth_area, pnr_area, pnr_wires, pnr_util, pnr_drcs))
