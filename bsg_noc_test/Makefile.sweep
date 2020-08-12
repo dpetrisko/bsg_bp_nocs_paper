@@ -89,10 +89,17 @@ TARGETS ?= DEFAULT_TARGETS
 
 sweep: $($(TARGETS))
 
-sweep_all: $(ROUTER_TARGETS) $(SHIFT_TARGETS) $(SRAM_TARGETS)
-
 stats:
 	./stats.py | tee stats.csv
 
+SAVE_AS ?=
+SUBDIRS := $(wildcard bsg_14.*/)
+save_results: $(SUBDIRS)
+$(SUBDIRS):
+	@if [ -z "$(SAVE_AS)" ]; then echo "Error: set SAVE_AS"; exit 1; fi
+	cd $(@D); make rename_build.$(SAVE_AS)
+.PHONY: $(SUBDIRS)
+
 clean_sweep:
-	rm -rf bsg_14.*
+	rm -rf bsg_14.*/build.2020*
+
