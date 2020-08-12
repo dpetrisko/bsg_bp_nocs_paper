@@ -13,6 +13,7 @@ package bsg_chip_pkg;
 
   //// co-located logic
   // One-hot configuration
+  // TODO: These are unused currently
   localparam aux_type_gp  = BSG_AUX_TYPE;
   localparam num_aux_gp   = BSG_NUM_AUX;
   localparam aux_width_gp = BSG_AUX_WIDTH;

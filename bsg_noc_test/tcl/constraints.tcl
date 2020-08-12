@@ -10,28 +10,20 @@ source -echo -verbose $::env(BSG_DESIGNS_DIR)/toplevels/common/bsg_clk_gen.const
   
   set clk_name "clk" ;# main clock running mul
   
-  set clk_period_ps       1000
-  #set clk_period_ps 600.00
-  #set clk_uncertainty_per 3.0
-  set clk_uncertainty_per 0.0
-  set clk_uncertainty_ps  [expr ${clk_period_ps}*(${clk_uncertainty_per}/100.0)]
-  #set clk_uncertainty_ps 20
+  set clk_period_ps       1250
+  set clk_uncertainty_ps  50 
   
   set core_clk_name           ${clk_name}
   set core_clk_period_ps      ${clk_period_ps}
   set core_clk_uncertainty_ps ${clk_uncertainty_ps}
   
-  set input_delay_per  0.00
-  set output_delay_per 0.00
-  
-  set core_input_delay_ps  [expr ${core_clk_period_ps}*(${input_delay_per}/100.0)]
-  set core_output_delay_ps [expr ${core_clk_period_ps}*(${output_delay_per}/100.0)]
+  # Assume latch on input
+  set core_input_delay_ps  0
+  # Arrive at 700 ps
+  set core_output_delay_ps [expr ${clk_period_ps} - 700]
 
   set driving_lib_cell "SC7P5T_INVX2_SSC14R"
   set load_lib_pin     "SC7P5T_INVX8_SSC14R/A"
-
-  #set driving_lib_cell "SC7P5T_INVX2_SSC14SL"
-  #set load_lib_pin     "SC7P5T_INVX8_SSC14SL/A"
 
   # Reg2Reg
   create_clock -period ${core_clk_period_ps} -name ${core_clk_name} [get_ports "clk_i"]
