@@ -14,7 +14,16 @@ set len_width  [lindex [split $router_ref_name "_"] 8]
 
 set nets [sizeof_collection [get_cells -hier *router*]]
 
-set tracks 4
+set tracks $::env(TRACKS)
+set layers $::env(LAYERS)
+
+if {$layers == 2} {
+  set hor_layers  "K1 K3"
+  set ver_layers "K2 K4"
+} else {
+  set hor_layers  "K1"
+  set ver_layers "K2"
+}
 
 set start_x [expr 10*0.384]
 set start_y [expr 10*0.384]
@@ -28,14 +37,14 @@ for {set net 0} {$net < $nets} {incr net} {
     set link_N_pins [index_collection $link_i_pins [expr 1*$link_width] [expr 2*$link_width-1]]
     append_to_collection link_N_pins [index_collection $link_o_pins [expr 1*$link_width] [expr 2*$link_width-1]]
 
-    set start_x [bsg_pins_line_constraint $link_N_pins "K2 K4" top $start_x "self" $link_S_pins $tracks 0]
+    set start_x [bsg_pins_line_constraint $link_N_pins $ver_layers top $start_x "self" $link_S_pins $tracks 0]
 
     set link_E_pins [index_collection $link_i_pins [expr 2*$link_width] [expr 3*$link_width-1]]
     append_to_collection link_E_pins [index_collection $link_o_pins [expr 2*$link_width] [expr 3*$link_width-1]]
     set link_W_pins [index_collection $link_i_pins [expr 3*$link_width] [expr 4*$link_width-1]]
     append_to_collection link_W_pins [index_collection $link_o_pins [expr 3*$link_width] [expr 4*$link_width-1]]
 
-    set start_y [bsg_pins_line_constraint $link_W_pins "K1 K3" left $start_y "self" $link_E_pins $tracks 0]
+    set start_y [bsg_pins_line_constraint $link_W_pins $hor_layers left $start_y "self" $link_E_pins $tracks 0]
 
     set link_i_pins [remove_from_collection $link_i_pins [index_collection $link_i_pins 0 [expr 4*$link_width-1]]]
     set link_o_pins [remove_from_collection $link_o_pins [index_collection $link_o_pins 0 [expr 4*$link_width-1]]]
@@ -45,7 +54,7 @@ for {set net 0} {$net < $nets} {incr net} {
     set link_W_pins [index_collection $link_i_pins [expr 1*$link_width] [expr 2*$link_width-1]]
     append_to_collection link_W_pins [index_collection $link_o_pins [expr 1*$link_width] [expr 2*$link_width-1]]
 
-    set start_y [bsg_pins_line_constraint $link_W_pins "K1 K3" left $start_y "self" $link_E_pins $tracks 0]
+    set start_y [bsg_pins_line_constraint $link_W_pins $hor_layers left $start_y "self" $link_E_pins $tracks 0]
 
     set link_i_pins [remove_from_collection $link_i_pins [index_collection $link_i_pins 0 [expr 2*$link_width-1]]]
     set link_o_pins [remove_from_collection $link_o_pins [index_collection $link_o_pins 0 [expr 2*$link_width-1]]]

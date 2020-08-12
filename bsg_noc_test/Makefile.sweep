@@ -1,4 +1,8 @@
 
+# Constrain number of cores. kkx has 512
+export DC_NUM_CORES   :=4
+export ICC2_NUM_CORES :=4
+
 # Runs an individual target
 # This subsitutes the parameters given in sweep@param1@param2@param3... format
 # These parameters are substituted in bsg_chip_pkg, which is used to parameterize bsg_chip.
@@ -7,15 +11,17 @@
 # Synthesis, dp and pnr will be done for the experiment
 sweep@%:
 	# Extract parameter from makefile target
-	$(eval NETWORK    := $(word 1,$(subst @,  ,$*)))
-	$(eval DIM        := $(word 2,$(subst @,  ,$*)))
-	$(eval FLIT_WIDTH := $(word 3,$(subst @,  ,$*)))
-	$(eval NUM_AUX    := $(word 4,$(subst @,  ,$*)))
-	$(eval AUX_TYPE   := $(word 5,$(subst @,  ,$*)))
-	$(eval AUX_WIDTH  := $(word 6,$(subst @,  ,$*)))
-	$(eval AUX_ELS    := $(word 7,$(subst @,  ,$*)))
+	$(eval LAYERS     := $(word 1,$(subst @,  ,$*)))
+	$(eval TRACKS     := $(word 2,$(subst @,  ,$*)))
+	$(eval NETWORK    := $(word 3,$(subst @,  ,$*)))
+	$(eval DIM        := $(word 4,$(subst @,  ,$*)))
+	$(eval FLIT_WIDTH := $(word 5,$(subst @,  ,$*)))
+	$(eval NUM_AUX    := $(word 6,$(subst @,  ,$*)))
+	$(eval AUX_TYPE   := $(word 7,$(subst @,  ,$*)))
+	$(eval AUX_WIDTH  := $(word 8,$(subst @,  ,$*)))
+	$(eval AUX_ELS    := $(word 9,$(subst @,  ,$*)))
 	# Create a unit tag for the configuration
-	$(eval TAG := $(NETWORK).$(DIM).$(FLIT_WIDTH).$(NUM_AUX).$(AUX_TYPE).$(AUX_WIDTH).$(AUX_ELS))
+	$(eval TAG := $(LAYERS).$(TRACKS).$(NETWORK).$(DIM).$(FLIT_WIDTH).$(NUM_AUX).$(AUX_TYPE).$(AUX_WIDTH).$(AUX_ELS))
 	$(eval BSG_14_DIR := bsg_14.$(TAG))
 
 	# Create bsg_14 directory if it doesn't exist
@@ -36,11 +42,11 @@ sweep@%:
 
 	# Do synth
 	@echo "Starting synthesis runs"
-	cd $(BSG_14_DIR); $(MAKE) synth > do_synth.$(TAG).log
-	@echo "Starting dp runs"
-	cd $(BSG_14_DIR); $(MAKE) dp > do_dp.$(TAG).log
-	@echo "Starting pnr runs"
-	cd $(BSG_14_DIR); $(MAKE) pnr > do_pnr.$(TAG).log
+	cd $(BSG_14_DIR); time $(MAKE) LAYERS=$(LAYERS) TRACKS=$(TRACKS) synth > do_synth.$(TAG).log
+	@echo "Starting dp run"
+	cd $(BSG_14_DIR); time $(MAKE) LAYERS=$(LAYERS) TRACKS=$(TRACKS) dp > do_dp.$(TAG).log
+	@echo "Starting pnr run"
+	cd $(BSG_14_DIR); time $(MAKE) LAYERS=$(LAYERS) TRACKS=$(TRACKS) pnr > do_pnr.$(TAG).log
 
 # Generates a stats.csv file based on the current_build in each bsg_14 subdirectory
 stats:
@@ -55,14 +61,17 @@ $(DEFAULT_TARGETS):
 	@echo "ERROR: Must select sweep TARGETS= from: ROUTER_TARGETS"
 
 ROUTER_TARGETS := \
-	sweep@1@1@32@0@0@0@0 sweep@2@1@32@0@0@0@0 \
-	sweep@1@2@32@0@0@0@0 sweep@2@2@32@0@0@0@0 \
+	sweep@1@2@1@1@32@0@0@0@0 sweep@1@2@2@1@32@0@0@0@0 \
+	sweep@1@2@1@2@32@0@0@0@0 sweep@1@2@2@2@32@0@0@0@0 \
 	\
-	sweep@1@1@64@0@0@0@0 sweep@2@1@64@0@0@0@0 \
-	sweep@1@2@64@0@0@0@0 sweep@2@2@64@0@0@0@0 \
+	sweep@1@2@1@1@64@0@0@0@0 sweep@1@2@2@1@64@0@0@0@0 \
+	sweep@1@2@1@2@64@0@0@0@0 sweep@1@2@2@2@64@0@0@0@0 \
 	\
-	sweep@1@1@96@0@0@0@0 sweep@2@1@96@0@0@0@0 \
-	sweep@1@2@96@0@0@0@0 sweep@2@2@96@0@0@0@0 \
+	sweep@1@2@1@1@96@0@0@0@0 sweep@1@2@2@1@96@0@0@0@0 \
+	sweep@1@2@1@2@96@0@0@0@0 sweep@1@2@2@2@96@0@0@0@0 \
+	\
+	sweep@1@2@1@1@96@0@0@0@0 sweep@1@2@2@1@96@0@0@0@0 \
+	sweep@1@2@1@2@96@0@0@0@0 sweep@1@2@2@2@96@0@0@0@0 \
 
 # make sweep will run a set of experiments based on the list in TARGETS. Because
 # each pnr run takes ~10 cores, it's not recommended to run with -j > 3 on kk machines

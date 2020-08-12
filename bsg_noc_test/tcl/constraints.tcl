@@ -10,7 +10,7 @@ source -echo -verbose $::env(BSG_DESIGNS_DIR)/toplevels/common/bsg_clk_gen.const
   
   set clk_name "clk" ;# main clock running mul
   
-  set clk_period_ps       1250
+  set clk_period_ps       2000
   set clk_uncertainty_ps  50 
   
   set core_clk_name           ${clk_name}

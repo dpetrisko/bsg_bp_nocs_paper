@@ -10,7 +10,7 @@ pnr_design_report = "chip_finish.report_design"
 pnr_util_report = "chip_finish.report_utilization"
 
 if __name__ == '__main__':
-    print('networks,dims,flit_width,num_aux,aux_type,aux_width,aux_els,synth_area,pnr_area,wire_length,util,drcs')
+    print('layers,tracks,networks,dims,flit_width,num_aux,aux_type,aux_width,aux_els,synth_area,pnr_area,wire_length,util,drcs')
     for d in glob.glob('bsg_14.*'):
         fields = d.replace('bsg_14.', '').replace('.',',')
 

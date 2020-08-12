@@ -10,10 +10,11 @@ set nets [sizeof_collection [get_cells -hier *router*]]
 
 # Tracks between adjacent pins (K layers require 2 spaces to alternate pins)
 #   so we divide by 2 in the calculation and pin placement script
-set tracks 4
+set tracks $::env(TRACKS)
+set layers $::env(LAYERS)
 
 # Enough space on the sides for bidirectional links for each net + 20 tracks of corner padding
-set side_length [expr 0.384 * 10 + $tracks / 2 * 0.384 * $link_width * $nets + 0.384 * 10]
+set side_length [expr 0.384 * 10 + $tracks / $layers * 0.384 * $link_width * $nets + 0.384 * 10]
 
 initialize_floorplan        \
   -control_type die         \
