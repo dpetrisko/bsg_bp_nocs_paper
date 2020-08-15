@@ -68,8 +68,7 @@ UTIL_TARGETS := \
 	sweep@1@2@32@27.8  sweep@1@2@64@36.6 \
 	sweep@1@2@96@43.7  sweep@1@2@128@49.8 \
 	sweep@1@2@256@68.9 sweep@1@2@512@132.1 \
-
-LOW_UTIL_TARGETS := \
+	\
 	sweep@1@2@32@30.6  sweep@1@2@64@40.3 \
 	sweep@1@2@96@48.1  sweep@1@2@128@54.8 \
 	sweep@1@2@256@76.0 sweep@1@2@512@132.1 \
