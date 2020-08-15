@@ -39,6 +39,9 @@ source -echo -verbose $::env(BSG_DESIGNS_DIR)/toplevels/common/bsg_clk_gen.const
   set_load [load_of [get_lib_pin */${load_lib_pin}]] ${core_output_pins}
   set_output_delay ${core_output_delay_ps} -clock ${core_clk_name} ${core_output_pins}
 
+  # Set false paths for slow signals
+  set_false_path -from [get_ports *cord*]
+
   # Derate
   set cells_to_derate [list]
   append_to_collection cells_to_derate [get_cells -quiet -hier -filter "ref_name=~gf14_*"]

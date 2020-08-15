@@ -6,3 +6,4 @@ bsg_packaging/
 root/
 sources/
 stats.csv
+*experiments*

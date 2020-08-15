@@ -11,17 +11,12 @@ export ICC2_NUM_CORES :=4
 # Synthesis, dp and pnr will be done for the experiment
 sweep@%:
 	# Extract parameter from makefile target
-	$(eval LAYERS     := $(word 1,$(subst @,  ,$*)))
-	$(eval TRACKS     := $(word 2,$(subst @,  ,$*)))
-	$(eval NETWORK    := $(word 3,$(subst @,  ,$*)))
-	$(eval DIM        := $(word 4,$(subst @,  ,$*)))
-	$(eval FLIT_WIDTH := $(word 5,$(subst @,  ,$*)))
-	$(eval NUM_AUX    := $(word 6,$(subst @,  ,$*)))
-	$(eval AUX_TYPE   := $(word 7,$(subst @,  ,$*)))
-	$(eval AUX_WIDTH  := $(word 8,$(subst @,  ,$*)))
-	$(eval AUX_ELS    := $(word 9,$(subst @,  ,$*)))
-	# Create a unit tag for the configuration
-	$(eval TAG := $(LAYERS).$(TRACKS).$(NETWORK).$(DIM).$(FLIT_WIDTH).$(NUM_AUX).$(AUX_TYPE).$(AUX_WIDTH).$(AUX_ELS))
+	$(eval NETWORK    := $(word 1,$(subst @,  ,$*)))
+	$(eval DIM        := $(word 2,$(subst @,  ,$*)))
+	$(eval FLIT_WIDTH := $(word 3,$(subst @,  ,$*)))
+	$(eval SIDE       := $(word 4,$(subst @,  ,$*)))
+	# Create a unit tag for the configuration, don't tag area
+	$(eval TAG := $(NETWORK).$(DIM).$(FLIT_WIDTH).$(subst .,-,$(SIDE)))
 	$(eval BSG_14_DIR := bsg_14.$(TAG))
 
 	# Create bsg_14 directory if it doesn't exist
@@ -35,18 +30,14 @@ sweep@%:
 	sed -i "s/BSG_NETWORKS/$(NETWORK)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_DIMS/$(DIM)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_FLIT_WIDTH/$(FLIT_WIDTH)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
-	sed -i "s/BSG_NUM_AUX/$(NUM_AUX)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
-	sed -i "s/BSG_AUX_TYPE/$(AUX_TYPE)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
-	sed -i "s/BSG_AUX_WIDTH/$(AUX_WIDTH)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
-	sed -i "s/BSG_AUX_ELS/$(AUX_ELS)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 
 	# Do synth
 	@echo "Starting synthesis runs"
-	cd $(BSG_14_DIR); time $(MAKE) LAYERS=$(LAYERS) TRACKS=$(TRACKS) synth > do_synth.$(TAG).log
+	cd $(BSG_14_DIR); time $(MAKE) SIDE=$(SIDE) synth > do_synth.$(TAG).log
 	@echo "Starting dp run"
-	cd $(BSG_14_DIR); time $(MAKE) LAYERS=$(LAYERS) TRACKS=$(TRACKS) dp > do_dp.$(TAG).log
+	cd $(BSG_14_DIR); time $(MAKE) SIDE=$(SIDE) dp > do_dp.$(TAG).log
 	@echo "Starting pnr run"
-	cd $(BSG_14_DIR); time $(MAKE) LAYERS=$(LAYERS) TRACKS=$(TRACKS) pnr > do_pnr.$(TAG).log
+	cd $(BSG_14_DIR); time $(MAKE) SIDE=$(SIDE) pnr > do_pnr.$(TAG).log
 
 # Generates a stats.csv file based on the current_build in each bsg_14 subdirectory
 stats:
@@ -61,17 +52,39 @@ $(DEFAULT_TARGETS):
 	@echo "ERROR: Must select sweep TARGETS= from: ROUTER_TARGETS"
 
 ROUTER_TARGETS := \
-	sweep@1@2@1@1@32@0@0@0@0 sweep@1@2@2@1@32@0@0@0@0 \
-	sweep@1@2@1@2@32@0@0@0@0 sweep@1@2@2@2@32@0@0@0@0 \
+	sweep@1@2@32@28.672  sweep@1@2@64@37.76 \
+	sweep@1@2@96@45.056  sweep@1@2@128@51.328 \
+	sweep@1@2@256@71.168 sweep@1@2@512@132.096 \
+
+UTIL_TARGETS := \
+	sweep@1@2@32@28.672  sweep@1@2@64@37.76 \
+	sweep@1@2@96@45.056  sweep@1@2@128@51.328 \
+	sweep@1@2@256@71.168 sweep@1@2@512@132.096 \
 	\
-	sweep@1@2@1@1@64@0@0@0@0 sweep@1@2@2@1@64@0@0@0@0 \
-	sweep@1@2@1@2@64@0@0@0@0 sweep@1@2@2@2@64@0@0@0@0 \
+	sweep@1@2@32@29.696  sweep@1@2@64@39.04 \
+	sweep@1@2@96@46.592  sweep@1@2@128@52.992 \
+	sweep@1@2@256@73.472 sweep@1@2@512@132.096 \
 	\
-	sweep@1@2@1@1@96@0@0@0@0 sweep@1@2@2@1@96@0@0@0@0 \
-	sweep@1@2@1@2@96@0@0@0@0 sweep@1@2@2@2@96@0@0@0@0 \
-	\
-	sweep@1@2@1@1@96@0@0@0@0 sweep@1@2@2@1@96@0@0@0@0 \
-	sweep@1@2@1@2@96@0@0@0@0 sweep@1@2@2@2@96@0@0@0@0 \
+	sweep@1@2@32@27.8  sweep@1@2@64@36.6 \
+	sweep@1@2@96@43.7  sweep@1@2@128@49.8 \
+	sweep@1@2@256@68.9 sweep@1@2@512@132.1 \
+
+LOW_UTIL_TARGETS := \
+	sweep@1@2@32@30.6  sweep@1@2@64@40.3 \
+	sweep@1@2@96@48.1  sweep@1@2@128@54.8 \
+	sweep@1@2@256@76.0 sweep@1@2@512@132.1 \
+
+LARGE_TARGETS := \
+	sweep@1@2@640@164.864  sweep@1@2@768@197.6322 \
+	sweep@1@2@896@230.4    sweep@1@2@1024@263.168 \
+	sweep@1@2@1532@393.216 sweep@1@2@2048@525.312 \
+	sweep@1@2@3072@787.456 sweep@1@2@4096@1049.6 \
+
+INFLECTION_TARGETS := \
+	sweep@1@2@288@75.264 sweep@1@2@320@82.944 \
+	sweep@1@2@352@91.136 sweep@1@2@384@99.328 \
+	sweep@1@2@416@107.52 sweep@1@2@448@115.712 \
+	sweep@1@2@480@123.904
 
 # make sweep will run a set of experiments based on the list in TARGETS. Because
 # each pnr run takes ~10 cores, it's not recommended to run with -j > 3 on kk machines

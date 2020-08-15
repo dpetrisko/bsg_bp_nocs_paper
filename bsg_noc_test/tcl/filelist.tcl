@@ -17,6 +17,7 @@ set SVERILOG_SOURCE_FILES [join "
   $basejump_stl_dir/bsg_misc/bsg_defines.v
 
   $basejump_stl_dir/bsg_noc/bsg_wormhole_router_pkg.v
+  $basejump_stl_dir/bsg_noc/bsg_noc_pkg.v
 
   $basejump_stl_dir/bsg_dataflow/bsg_two_fifo.v
   $basejump_stl_dir/bsg_mem/bsg_mem_1r1w.v
