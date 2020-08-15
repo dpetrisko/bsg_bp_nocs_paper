@@ -11,16 +11,15 @@ source -echo -verbose $::env(BSG_DESIGNS_DIR)/toplevels/common/bsg_clk_gen.const
   set clk_name "clk" ;# main clock running mul
   
   set clk_period_ps       1000
-  # Overconstrain uncertainty, we remove this during design planning
-  set clk_uncertainty_ps  200
+  set clk_uncertainty_ps  100
   
   set core_clk_name           ${clk_name}
   set core_clk_period_ps      ${clk_period_ps}
   set core_clk_uncertainty_ps ${clk_uncertainty_ps}
   
-  # Arrive at 700 ps
-  set core_input_delay_ps  [expr 700]
-  set core_output_delay_ps [expr ${clk_period_ps} - 700]
+  # Arrive at 600 ps
+  set core_input_delay_ps  [expr 600]
+  set core_output_delay_ps [expr ${clk_period_ps} - ${core_input_delay_ps}]
 
   set driving_lib_cell "SC7P5T_INVX2_SSC14R"
   set load_lib_pin     "SC7P5T_INVX8_SSC14R/A"

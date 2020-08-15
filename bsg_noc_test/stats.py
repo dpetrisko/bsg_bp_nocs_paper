@@ -10,9 +10,10 @@ place_design_report = "place_opt.report_design"
 place_util_report = "place_opt.report_utilization"
 pnr_design_report = "chip_finish.report_design"
 pnr_util_report = "chip_finish.report_utilization"
+pnr_qor_report = "chip_finish.report_qor"
 
 if __name__ == '__main__':
-    print('networks,dims,flit_width,side_length,synth_cell_area,place_cell_area,place_util,pnr_cell_area,pnr_util,pnr_drc,pnr_buffer')
+    print('networks,dims,flit_width,side_length,synth_cell_area,place_cell_area,place_util,pnr_cell_area,pnr_util,pnr_drc,pnr_buffer,pnr_tns')
     for d in glob.glob('bsg_14.*'):
         fields = d.replace('bsg_14.', '').replace('.',',').replace('-','.')
 
@@ -65,5 +66,12 @@ if __name__ == '__main__':
         except:
             pnr_util = 0
 
+        report = d + '/' + pnr_report_path + '/' + pnr_qor_report
+        try:
+            with open(report, 'r') as f:
+                lines = f.read().splitlines()
+                pnr_tns = filter(lambda l: 'Design             (Setup)' in l, lines)[0].split()[3]
+        except:
+            pnr_tns = 0
 
-        print("{},{},{},{},{},{},{},{}".format(fields, synth_area, place_area, place_util, pnr_area, pnr_util, pnr_drcs, pnr_buffer))
+        print("{},{},{},{},{},{},{},{},{}".format(fields, synth_area, place_area, place_util, pnr_area, pnr_util, pnr_drcs, pnr_buffer, pnr_tns))
