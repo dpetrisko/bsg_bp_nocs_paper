@@ -11,7 +11,8 @@ source -echo -verbose $::env(BSG_DESIGNS_DIR)/toplevels/common/bsg_clk_gen.const
   set clk_name "clk" ;# main clock running mul
   
   set clk_period_ps       1000
-  set clk_uncertainty_ps  20
+  # Overconstrain uncertainty, we remove this during design planning
+  set clk_uncertainty_ps  200
   
   set core_clk_name           ${clk_name}
   set core_clk_period_ps      ${clk_period_ps}
