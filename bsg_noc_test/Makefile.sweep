@@ -51,11 +51,6 @@ TARGETS ?= DEFAULT_TARGETS
 $(DEFAULT_TARGETS):
 	@echo "ERROR: Must select sweep TARGETS= from: ROUTER_TARGETS"
 
-ROUTER_TARGETS := \
-	sweep@1@2@32@28.672  sweep@1@2@64@37.76 \
-	sweep@1@2@96@45.056  sweep@1@2@128@51.328 \
-	sweep@1@2@256@71.168 sweep@1@2@512@132.096 \
-
 UTIL_TARGETS := \
 	sweep@1@2@32@29.696  sweep@1@2@64@39.04 \
 	sweep@1@2@96@46.592  sweep@1@2@128@52.992 \
@@ -67,15 +62,24 @@ UTIL_TARGETS := \
 
 LOW_UTIL_TARGETS := \
 	sweep@1@2@32@30.72 \
-	sweep@1@2@32@33.152 \
 	sweep@1@2@64@40.448 \
-	sweep@1@2@64@43.648 \
 	sweep@1@2@96@48.256 \
-	sweep@1@2@96@52.096 \
 	sweep@1@2@128@54.912 \
-	sweep@1@2@128@59.264 \
 	sweep@1@2@256@76.032 \
-	sweep@1@2@256@82.048 \
+
+ROUTER_TARGETS := \
+	sweep@1@2@32@28.672 \
+	sweep@1@2@64@37.76 \
+	sweep@1@2@96@45.056 \
+	sweep@1@2@128@51.328 \
+	sweep@1@2@256@71.168 \
+	sweep@1@2@288@75.264 \
+	sweep@1@2@320@82.944 \
+	sweep@1@2@352@91.136 \
+	sweep@1@2@384@99.328 \
+	sweep@1@2@416@107.52 \
+	sweep@1@2@448@115.712 \
+	sweep@1@2@480@123.904 \
 	sweep@1@2@512@132.096 \
 	sweep@1@2@640@164.864 \
 	sweep@1@2@768@197.632 \
