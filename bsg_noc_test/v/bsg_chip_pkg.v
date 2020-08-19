@@ -15,6 +15,11 @@ package bsg_chip_pkg;
   localparam data_width_gp = 512;
   localparam len_width_gp = `BSG_SAFE_CLOG2(data_width_gp / flit_width_gp);
 
+  // Aux els, for instance: depth of a shift registers
+  localparam aux_type_gp = BSG_AUX_TYPE;
+  localparam aux_width_gp = 32;
+  localparam aux_els_gp = BSG_AUX_ELS;
+
   // cord of 6 == 8x8 tiles
   localparam row_cord_width_gp = 3;
   localparam cord_dims_gp = 2;

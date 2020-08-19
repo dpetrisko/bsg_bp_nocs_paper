@@ -13,7 +13,7 @@ pnr_util_report = "chip_finish.report_utilization"
 pnr_qor_report = "chip_finish.report_qor"
 
 if __name__ == '__main__':
-    print('networks,dims,flit_width,side_length,synth_cell_area,place_cell_area,place_util,pnr_cell_area,pnr_util,pnr_drc,pnr_buffer,pnr_tns')
+    print('networks,dims,flit_width,aux_type,shift_els,side_length,synth_cell_area,place_cell_area,place_util,pnr_cell_area,pnr_util,pnr_drc,pnr_buffer,pnr_tns')
     for d in glob.glob('bsg_14.*'):
         fields = d.replace('bsg_14.', '').replace('.',',').replace('-','.')
 

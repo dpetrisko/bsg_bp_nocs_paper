@@ -14,22 +14,26 @@ sweep@%:
 	$(eval NETWORK    := $(word 1,$(subst @,  ,$*)))
 	$(eval DIM        := $(word 2,$(subst @,  ,$*)))
 	$(eval FLIT_WIDTH := $(word 3,$(subst @,  ,$*)))
-	$(eval SIDE       := $(word 4,$(subst @,  ,$*)))
+	$(eval AUX_TYPE   := $(word 4,$(subst @,  ,$*)))
+	$(eval AUX_ELS    := $(word 5,$(subst @,  ,$*)))
+	$(eval SIDE       := $(word 6,$(subst @,  ,$*)))
 	# Create a unit tag for the configuration, don't tag area
-	$(eval TAG := $(NETWORK).$(DIM).$(FLIT_WIDTH).$(subst .,-,$(SIDE)))
+	$(eval TAG := $(NETWORK).$(DIM).$(FLIT_WIDTH).$(AUX_TYPE).$(AUX_ELS).$(subst .,-,$(SIDE)))
 	$(eval BSG_14_DIR := bsg_14.$(TAG))
 
 	# Create bsg_14 directory if it doesn't exist
 	@echo "Creating new bsg_14 directory"
 	if [ -d $(BSG_14_DIR) ]; then echo "$(BSG_14_DIR) exists"; else cp -r bsg_14/ $(BSG_14_DIR); fi
 	sed -i "s/bsg_ac_black_parrot_quad_core_rc3/bsg_noc_test/g" $(BSG_14_DIR)/Makefile.include
-	cd $(BSG_14_DIR); $(MAKE) new_build
+	#cd $(BSG_14_DIR); $(MAKE) new_build
 
 	@echo "Generating sweep-specific configuration package"
 	cp v/bsg_chip_pkg.v $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_NETWORKS/$(NETWORK)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_DIMS/$(DIM)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 	sed -i "s/BSG_FLIT_WIDTH/$(FLIT_WIDTH)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
+	sed -i "s/BSG_AUX_TYPE/$(AUX_TYPE)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
+	sed -i "s/BSG_AUX_ELS/$(AUX_ELS)/g" $(BSG_14_DIR)/bsg_chip_pkg.v
 
 	# Do synth
 	@echo "Starting synthesis runs"
@@ -108,6 +112,37 @@ MULTI_TARGETS := \
 	sweep@4@2@64@80.768 \
 	sweep@4@2@128@135.168 \
 	sweep@4@2@256@266.24 \
+
+COMBO_TARGETS := \
+	sweep@1@2@32@8@76.032 \
+	sweep@1@2@32@16@76.032 \
+	sweep@1@2@32@32@76.032 \
+	sweep@1@2@32@64@76.032 \
+	sweep@1@2@32@128@76.032 \
+	sweep@1@2@32@256@76.032 \
+
+PACK_TARGETS := \
+	sweep@1@2@352@0@10@91.136 \
+	sweep@1@2@384@0@18@99.328 \
+	sweep@1@2@416@0@27@107.52 \
+	sweep@1@2@448@0@37@115.712 \
+	sweep@1@2@480@0@48@123.904 \
+	sweep@1@2@512@0@59@132.096 \
+	sweep@1@2@640@0@115@164.864 \
+	sweep@1@2@768@0@186@197.632 \
+	sweep@1@2@896@0@275@230.4 \
+	sweep@1@2@1024@0@378@263.168 \
+	\
+	sweep@1@2@352@1@10@91.136 \
+	sweep@1@2@384@1@18@99.328 \
+	sweep@1@2@416@1@27@107.52 \
+	sweep@1@2@448@1@37@115.712 \
+	sweep@1@2@480@1@48@123.904 \
+	sweep@1@2@512@1@59@132.096 \
+	sweep@1@2@640@1@115@164.864 \
+	sweep@1@2@768@1@186@197.632 \
+	sweep@1@2@896@1@275@230.4 \
+	sweep@1@2@1024@1@378@263.168 \
 
 LARGE_TARGETS := \
 	sweep@1@2@640@164.864  sweep@1@2@768@197.6322 \

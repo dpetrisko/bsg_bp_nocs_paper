@@ -50,8 +50,32 @@ module bsg_chip
          );
       assign links_o[j] = links_lo[j][dirs_lp-1:W];
 
-      assign links_li[j][dirs_lp-1:W] = links_i[j][dirs_lp-1:W];
-      assign links_li[j][P]           = links_lo[j][P];
+      if (aux_type_gp == 0)
+        begin : passthrough
+          assign links_li[j][dirs_lp-1:W] = links_i[j][dirs_lp-1:W];
+          assign links_li[j][P]           = links_lo[j][P];
+        end
+      else if (aux_type_gp == 1)
+        begin : chain
+          for (genvar i = W; i < dirs_lp; i++)
+            begin : dirs
+              logic [aux_width_gp-1:0] aux_lo;
+              bsg_dff_chain
+                #(.width_p(aux_width_gp), .num_stages_p(aux_els_gp))
+                chain_block
+                 (.clk_i(clk_i)
+
+                  ,.data_i(links_lo[j][i][0+:aux_width_gp])
+                  ,.data_o(aux_lo)
+                  );
+              assign links_li[j][i][0+:aux_width_gp] = my_cord_i[j] ? links_i[j][i][0+:aux_width_gp] : aux_lo;
+              for (genvar k = aux_width_gp; k < link_width_lp; k++)
+                begin : tieoff
+                  assign links_li[j][i][k] = links_i[j][i][k];
+                end
+            end
+          assign links_li[j][P] = links_lo[j][P];
+        end
     end
 
 endmodule
