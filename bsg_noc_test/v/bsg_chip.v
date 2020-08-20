@@ -76,6 +76,36 @@ module bsg_chip
             end
           assign links_li[j][P] = links_lo[j][P];
         end
+      else if (aux_type_gp == 2)
+        begin : sram
+          logic [aux_els_gp-1:0][31:0] sram_data_lo;
+          for (genvar i  = 0; i < aux_els_gp; i++)
+            begin : b
+              // We use 64x32 as an sram atomic unit
+              wire v_li = my_cord_i[0];
+              wire w_li = my_cord_i[1];
+              wire [5:0] addr_li = my_cord_i[0+:6];
+              wire [31:0] data_li = links_lo[j][P][0+:32];
+              bsg_mem_1rw_sync
+               #(.width_p(32), .els_p(64))
+               bank
+                (.clk_i(clk_i)
+                 ,.reset_i(reset_i)
+
+                 ,.v_i(v_li)
+                 ,.w_i(w_li)
+                 ,.addr_i(addr_li)
+                 ,.data_i(data_li)
+                 ,.data_o(sram_data_lo[i])
+                 );
+            end
+          assign links_li[j][dirs_lp-1:W] = links_i[j][dirs_lp-1:W];
+          assign links_li[j][P][0+:32] = {32{&sram_data_lo}};
+          for (genvar k = 32; k < link_width_lp; k++)
+            begin : tieoff
+              assign links_li[j][P][k] = links_i[j][P][k];
+            end
+        end
     end
 
 endmodule

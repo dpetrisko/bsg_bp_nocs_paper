@@ -25,7 +25,7 @@ sweep@%:
 	@echo "Creating new bsg_14 directory"
 	if [ -d $(BSG_14_DIR) ]; then echo "$(BSG_14_DIR) exists"; else cp -r bsg_14/ $(BSG_14_DIR); fi
 	sed -i "s/bsg_ac_black_parrot_quad_core_rc3/bsg_noc_test/g" $(BSG_14_DIR)/Makefile.include
-	#cd $(BSG_14_DIR); $(MAKE) new_build
+	cd $(BSG_14_DIR); $(MAKE) new_build
 
 	@echo "Generating sweep-specific configuration package"
 	cp v/bsg_chip_pkg.v $(BSG_14_DIR)/bsg_chip_pkg.v
@@ -143,6 +143,18 @@ PACK_TARGETS := \
 	sweep@1@2@768@1@186@197.632 \
 	sweep@1@2@896@1@275@230.4 \
 	sweep@1@2@1024@1@378@263.168 \
+
+SRAM_TARGETS := \
+	sweep@1@2@352@2@1@91.136 \
+	sweep@1@2@384@2@2@99.328 \
+	sweep@1@2@416@2@3@107.52 \
+	sweep@1@2@448@2@4@115.712 \
+	sweep@1@2@480@2@6@123.904 \
+	sweep@1@2@512@2@7@132.096 \
+	sweep@1@2@640@2@14@164.864 \
+	sweep@1@2@768@2@23@197.632 \
+	sweep@1@2@896@2@34@230.4 \
+	sweep@1@2@1024@2@47@263.168 \
 
 LARGE_TARGETS := \
 	sweep@1@2@640@164.864  sweep@1@2@768@197.6322 \
