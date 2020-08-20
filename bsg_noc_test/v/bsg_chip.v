@@ -99,8 +99,15 @@ module bsg_chip
                  ,.data_o(sram_data_lo[i])
                  );
             end
+          logic [31:0] final_data;
+          always_comb
+            begin
+              final_data = '0;
+              for (integer k = 0; k < aux_els_gp; k++)
+                final_data ^= sram_data_lo;
+            end
           assign links_li[j][dirs_lp-1:W] = links_i[j][dirs_lp-1:W];
-          assign links_li[j][P][0+:32] = {32{&sram_data_lo}};
+          assign links_li[j][P][0+:32] = final_data;
           for (genvar k = 32; k < link_width_lp; k++)
             begin : tieoff
               assign links_li[j][P][k] = links_i[j][P][k];
